@@ -1,0 +1,32 @@
+services:
+  db:
+    image: mysql:8.4
+    container_name: pacientes_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pacientes_db
+    ports:
+      - "3307:3306" # 3306 es el puerto por defecto de MySQL, pero si ya tienes un MySQL instalado en tu máquina en ese puerto, este cambiará a 3307 para evitar conflictos. Si no tienes MySQL instalado, puedes cambiarlo a "3306:3306". # 3307 para conectarse desde fuera del contenedor
+    volumes:
+      - pacientes_db_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    container_name: ms_pacientes_api
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/code # útil en desarrollo para hot-reload; quitar en producción
+
+volumes:
+  pacientes_db_data:
