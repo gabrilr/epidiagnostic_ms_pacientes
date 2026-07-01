@@ -1,8 +1,5 @@
 """
 Adaptador de salida: PersonalRepositoryImpl
-
-Implementación concreta de PersonalRepository usando SQLAlchemy async +
-MySQL. Mismo patrón que PacienteRepositoryImpl.
 """
 from uuid import UUID
 
@@ -49,6 +46,8 @@ class PersonalRepositoryImpl(PersonalRepository):
             tipo=personal.tipo.value,
             comunidad=personal.ubicacion_asignada.comunidad,
             municipio=personal.ubicacion_asignada.municipio,
+            correo=personal.correo,
+            contrasena_hash=personal.contrasena_hash,
             cedula_profesional=personal.cedula_profesional,
             activo=personal.activo,
             creado_en=personal.creado_en,
@@ -61,6 +60,8 @@ class PersonalRepositoryImpl(PersonalRepository):
             nombre_completo=modelo.nombre_completo,
             tipo=TipoPersonal(modelo.tipo),
             ubicacion_asignada=Ubicacion(comunidad=modelo.comunidad, municipio=modelo.municipio),
+            correo=modelo.correo,
+            contrasena_hash=modelo.contrasena_hash,
             cedula_profesional=modelo.cedula_profesional,
             activo=modelo.activo,
             creado_en=modelo.creado_en,

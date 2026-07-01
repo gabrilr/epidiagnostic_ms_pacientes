@@ -1,14 +1,5 @@
 """
 Entidad raíz de agregado: PersonalMedico
-
-Representa al personal de salud (médicos y enfermeras) autorizado para
-registrar atenciones. Es consultado por el microservicio 2 (Atención
-Médica) para validar que quien registra una atención existe y está
-activo.
-
-Nota: la cédula profesional es opcional porque en comunidades rurales
-de Chiapas puede haber personal de salud comunitario certificado pero
-no titulado formalmente (ej. promotores de salud capacitados).
 """
 import uuid
 from dataclasses import dataclass, field
@@ -28,6 +19,8 @@ class PersonalMedico:
     nombre_completo: str
     tipo: TipoPersonal
     ubicacion_asignada: Ubicacion
+    correo: str
+    contrasena_hash: str
     id: uuid.UUID = field(default_factory=uuid.uuid4)
     cedula_profesional: str | None = None
     activo: bool = True
@@ -36,6 +29,8 @@ class PersonalMedico:
     def __post_init__(self) -> None:
         if not self.nombre_completo or not self.nombre_completo.strip():
             raise ValueError("El nombre completo del personal médico no puede estar vacío.")
+        if not self.correo or "@" not in self.correo:
+            raise ValueError("El correo electrónico no es válido.")
 
     def desactivar(self) -> None:
         self.activo = False

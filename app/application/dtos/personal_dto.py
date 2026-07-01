@@ -8,9 +8,11 @@ from datetime import datetime
 @dataclass
 class RegistrarPersonalInputDTO:
     nombre_completo: str
-    tipo: str               # "medico" | "enfermera"
+    tipo: str
     comunidad: str
     municipio: str
+    correo: str
+    contrasena: str                     # texto plano; el caso de uso la hashea antes de persistir
     cedula_profesional: str | None = None
 
 
@@ -21,6 +23,8 @@ class PersonalOutputDTO:
     tipo: str
     comunidad: str
     municipio: str
+    correo: str
     cedula_profesional: str | None
     activo: bool
     creado_en: datetime
+    # contrasena_hash nunca se expone hacia afuera

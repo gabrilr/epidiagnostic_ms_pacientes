@@ -1,7 +1,5 @@
 """
 Adaptador de entrada: personal_router
-
-Endpoints de registro y consulta de personal médico.
 """
 from typing import Annotated
 from uuid import UUID
@@ -42,6 +40,8 @@ async def registrar_personal(
             tipo=request.tipo,
             comunidad=request.comunidad,
             municipio=request.municipio,
+            correo=request.correo,
+            contrasena=request.contrasena,      # texto plano; el caso de uso hashea
             cedula_profesional=request.cedula_profesional,
         )
         resultado = await use_case.ejecutar(input_dto)
