@@ -39,6 +39,7 @@ class PacienteResponse(BaseModel):
     contacto_emergencia: str | None
     creado_en: datetime
     actualizado_en: datetime
+    edad: int
     fue_creado_ahora: bool = Field(
         description="False si el CURP ya existía y se devolvió el paciente existente sin crear uno nuevo."
     )

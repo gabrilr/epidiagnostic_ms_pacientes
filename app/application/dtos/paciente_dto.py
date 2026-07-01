@@ -38,6 +38,7 @@ class PacienteOutputDTO:
     contacto_emergencia: str | None
     creado_en: datetime
     actualizado_en: datetime
+    edad: int
     fue_creado_ahora: bool  # True si se creó en esta llamada, False si ya existía (idempotencia)
 
 

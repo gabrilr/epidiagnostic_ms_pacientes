@@ -34,5 +34,6 @@ class ConsultarPacienteUseCase:
             contacto_emergencia=paciente.contacto_emergencia,
             creado_en=paciente.creado_en,
             actualizado_en=paciente.actualizado_en,
+            edad=paciente.edad,
             fue_creado_ahora=False,
         )

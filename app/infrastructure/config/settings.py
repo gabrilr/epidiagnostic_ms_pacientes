@@ -17,6 +17,11 @@ class Settings(BaseSettings):
     environment: str = "development"
 
     database_url: str = "mysql+aiomysql://root:root@db:3306/pacientes_db"
+
+    # JWT
+    jwt_secret_key: str = "cambia-este-secreto-en-produccion"
+    jwt_algorithm: str = "HS256"
+    jwt_expire_minutes: int = 60
     db_echo: bool = False
 
     # TODO: agregar configuración de timeouts cuando se implemente la
