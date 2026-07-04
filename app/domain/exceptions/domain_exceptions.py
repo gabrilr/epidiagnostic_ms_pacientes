@@ -52,3 +52,26 @@ class PersonalInactivoException(DomainException):
     def __init__(self, identificador: str):
         self.identificador = identificador
         super().__init__(f"El personal médico {identificador} está inactivo.")
+
+
+class SolicitudPremiumNoEncontradaException(DomainException):
+    """Se lanza cuando se busca una solicitud Premium (por id o por personal) y no existe."""
+    def __init__(self, identificador: str):
+        self.identificador = identificador
+        super().__init__(f"No se encontró ninguna solicitud Premium para {identificador}.")
+
+
+class SolicitudPendienteExistenteException(DomainException):
+    """
+    Se lanza al intentar crear una solicitud Premium cuando el personal
+    ya tiene una solicitud pendiente sin resolver.
+    """
+    def __init__(self):
+        super().__init__("Ya tienes una solicitud pendiente.")
+
+
+class CorreoDuplicadoException(DomainException):
+    """Se lanza al intentar registrar un correo que ya existe en el sistema."""
+    def __init__(self, correo: str):
+        self.correo = correo
+        super().__init__(f"El correo {correo} ya está registrado.")

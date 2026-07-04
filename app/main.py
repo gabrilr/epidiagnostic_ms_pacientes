@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.infrastructure.adapters.input.api.admin_router import router as admin_router
 from app.infrastructure.adapters.input.api.auth_router import router as auth_router
 from app.infrastructure.adapters.input.api.paciente_router import router as paciente_router
 from app.infrastructure.adapters.input.api.personal_router import router as personal_router
@@ -45,6 +46,7 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(paciente_router)
 app.include_router(personal_router)
+app.include_router(admin_router)
 
 
 @app.get("/health", tags=["Sistema"], summary="Health check para orquestadores/API Gateway")

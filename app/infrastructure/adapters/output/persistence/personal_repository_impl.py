@@ -38,6 +38,20 @@ class PersonalRepositoryImpl(PersonalRepository):
         resultado = await self._session.execute(query)
         return [self._a_entidad(m) for m in resultado.scalars().all()]
 
+    async def actualizar_tipo(self, personal_id: UUID, nuevo_tipo: TipoPersonal) -> None:
+        # Fetch + mutate in place (en vez de reconstruir PersonalModel vía
+        # _a_modelo + session.add) para no chocar con el identity map de
+        # SQLAlchemy si el mismo personal ya fue cargado antes en esta
+        # misma sesión (ej. buscar_por_id dentro del mismo caso de uso).
+        resultado = await self._session.execute(
+            select(PersonalModel).where(PersonalModel.id == personal_id)
+        )
+        modelo = resultado.scalar_one_or_none()
+        if modelo is None:
+            return
+        modelo.tipo = nuevo_tipo.value
+        await self._session.commit()
+
     @staticmethod
     def _a_modelo(personal: PersonalMedico) -> PersonalModel:
         return PersonalModel(

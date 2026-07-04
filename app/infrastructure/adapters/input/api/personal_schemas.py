@@ -14,7 +14,7 @@ from pydantic import BaseModel, EmailStr, Field, model_validator
 
 class RegistrarPersonalRequest(BaseModel):
     nombre_completo: str = Field(..., min_length=1, max_length=255)
-    tipo: str = Field(..., pattern="^(medico|enfermera)$")
+    tipo: str = Field(..., pattern="^(usuario|medico|enfermera)$")
     comunidad: str = Field(..., min_length=1, max_length=255)
     municipio: str = Field(..., min_length=1, max_length=255)
     correo: EmailStr

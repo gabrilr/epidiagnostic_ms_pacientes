@@ -10,8 +10,23 @@ from app.domain.value_objects.ubicacion import Ubicacion
 
 
 class TipoPersonal(str, Enum):
-    MEDICO = "medico"
+    USUARIO = "usuario"
     ENFERMERA = "enfermera"
+    MEDICO = "medico"
+    ADMIN = "admin"
+
+
+# Orden de planes de menor a mayor, usado para validar que un cambio de
+# plan (tras un pago) sea siempre una subida, nunca una baja ni un
+# lateral. Ver PersonalMedico.actualizar_plan. ADMIN no es un plan
+# pagado, pero se incluye con el rango más alto para que el método no
+# reviente con KeyError si alguna vez se invoca sobre una cuenta admin.
+_RANGO_PLAN = {
+    TipoPersonal.USUARIO: 0,
+    TipoPersonal.ENFERMERA: 1,
+    TipoPersonal.MEDICO: 2,
+    TipoPersonal.ADMIN: 3,
+}
 
 
 @dataclass
@@ -37,3 +52,16 @@ class PersonalMedico:
 
     def reactivar(self) -> None:
         self.activo = True
+
+    def actualizar_plan(self, nuevo_tipo: "TipoPersonal", cedula_verificada: bool) -> None:
+        """
+        Cambia el plan (tipo) tras un pago. Solo permite subir de plan
+        (usuario < enfermera < medico), nunca bajar ni quedarse igual.
+        Subir a "medico" exige cedula_verificada=True (hoy la
+        verificación de cédula es manual, ver SolicitudPremium).
+        """
+        if _RANGO_PLAN[nuevo_tipo] <= _RANGO_PLAN[self.tipo]:
+            raise ValueError("No puedes bajar de plan.")
+        if nuevo_tipo == TipoPersonal.MEDICO and not cedula_verificada:
+            raise ValueError("Se requiere verificación de cédula para el plan Premium")
+        self.tipo = nuevo_tipo

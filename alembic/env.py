@@ -22,6 +22,7 @@ from app.infrastructure.config.settings import get_settings  # noqa: E402
 from app.infrastructure.adapters.output.persistence.models.paciente_model import PacienteModel  # noqa: E402,F401
 from app.infrastructure.adapters.output.persistence.models.antecedente_model import AntecedenteModel  # noqa: E402,F401
 from app.infrastructure.adapters.output.persistence.models.personal_model import PersonalModel  # noqa: E402,F401
+from app.infrastructure.adapters.output.persistence.models.solicitud_premium_model import SolicitudPremiumModel  # noqa: E402,F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

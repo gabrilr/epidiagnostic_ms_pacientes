@@ -8,7 +8,7 @@ la infraestructura implementa.
 from abc import ABC, abstractmethod
 from uuid import UUID
 
-from app.domain.entities.personal_medico import PersonalMedico
+from app.domain.entities.personal_medico import PersonalMedico, TipoPersonal
 
 
 class PersonalRepository(ABC):
@@ -23,4 +23,8 @@ class PersonalRepository(ABC):
 
     @abstractmethod
     async def listar_todos(self, solo_activos: bool = True) -> list[PersonalMedico]:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def actualizar_tipo(self, personal_id: UUID, nuevo_tipo: TipoPersonal) -> None:
         raise NotImplementedError
