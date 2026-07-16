@@ -56,3 +56,25 @@ class ResultadoSincronizacionDTO:
     id_servidor: str
     curp: str
     estado: str  # "creado" | "ya_existente"
+
+
+@dataclass
+class AgregarAntecedenteInputDTO:
+    """Entrada del caso de uso AgregarAntecedenteHistorial. El historial es append-only."""
+    descripcion: str
+    tipo: str
+    origen_atencion_id: str | None = None
+
+
+@dataclass
+class ActualizarDatosPacienteInputDTO:
+    """
+    Entrada del caso de uso ActualizarDatosPaciente. Todos los campos son
+    opcionales (PATCH parcial): solo se actualiza lo que venga distinto
+    de None.
+    """
+    nombre_completo: str | None = None
+    comunidad: str | None = None
+    municipio: str | None = None
+    lengua_materna: str | None = None
+    contacto_emergencia: str | None = None

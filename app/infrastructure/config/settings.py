@@ -21,7 +21,11 @@ class Settings(BaseSettings):
     # JWT
     jwt_secret_key: str = "cambia-este-secreto-en-produccion"
     jwt_algorithm: str = "HS256"
-    jwt_expire_minutes: int = 60
+    # 7 dias: el celular offline-first puede pasar varios dias sin señal
+    # entre sincronizaciones, y un token de vida corta expiraria antes de
+    # poder sincronizar (un refresh flow tampoco sirve aqui porque también
+    # exigiria conectividad para renovarse).
+    jwt_expire_minutes: int = 60 * 24 * 7
     db_echo: bool = False
 
     # TODO: agregar configuración de timeouts cuando se implemente la

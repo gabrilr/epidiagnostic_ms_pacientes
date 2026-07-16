@@ -59,3 +59,21 @@ class ResultadoSincronizacionResponse(BaseModel):
 
 class SincronizarPacientesResponse(BaseModel):
     resultados: list[ResultadoSincronizacionResponse]
+
+
+class AgregarAntecedenteRequest(BaseModel):
+    descripcion: str = Field(..., min_length=1, max_length=1000)
+    tipo: str = Field(..., pattern="^(alergia|enfermedad_cronica|embarazo_previo|cirugia|otro)$")
+    origen_atencion_id: str | None = Field(
+        default=None,
+        description="ID de la atención (MS2) que generó este antecedente, si aplica.",
+    )
+
+
+class ActualizarDatosPacienteRequest(BaseModel):
+    """Todos los campos son opcionales: PATCH parcial, solo se actualiza lo que venga."""
+    nombre_completo: str | None = Field(default=None, min_length=1, max_length=255)
+    comunidad: str | None = Field(default=None, min_length=1, max_length=255)
+    municipio: str | None = Field(default=None, min_length=1, max_length=255)
+    lengua_materna: str | None = None
+    contacto_emergencia: str | None = None

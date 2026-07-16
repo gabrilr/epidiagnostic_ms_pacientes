@@ -51,6 +51,12 @@ class Paciente:
             if not self.contacto_emergencia.isdigit() or len(self.contacto_emergencia) != 10:
                 raise ValueError("El contacto de emergencia debe ser un número de teléfono de 10 dígitos.")
 
+    @property
+    def edad(self) -> int:
+        hoy = date.today()
+        cumplio_este_anio = (hoy.month, hoy.day) >= (self.fecha_nacimiento.month, self.fecha_nacimiento.day)
+        return hoy.year - self.fecha_nacimiento.year - (0 if cumplio_este_anio else 1)
+
     def agregar_antecedente(self, antecedente: AntecedenteMedico) -> None:
         """
         Punto único de entrada para anexar antecedentes al historial.

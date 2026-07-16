@@ -16,6 +16,7 @@ from app.infrastructure.adapters.input.api.personal_schemas import (
     PersonalResponse,
     RegistrarPersonalRequest,
 )
+from app.infrastructure.adapters.input.api.auth_dependencies import get_personal_id_actual
 from app.infrastructure.dependency_injection import (
     get_consultar_personal_use_case,
     get_registrar_personal_use_case,
@@ -33,6 +34,7 @@ router = APIRouter(prefix="/personal", tags=["Personal Médico"])
 async def registrar_personal(
     request: RegistrarPersonalRequest,
     use_case: Annotated[RegistrarPersonalUseCase, Depends(get_registrar_personal_use_case)],
+    _personal_id: Annotated[UUID, Depends(get_personal_id_actual)],
 ) -> PersonalResponse:
     try:
         input_dto = RegistrarPersonalInputDTO(
@@ -58,6 +60,7 @@ async def registrar_personal(
 async def consultar_personal(
     personal_id: UUID,
     use_case: Annotated[ConsultarPersonalUseCase, Depends(get_consultar_personal_use_case)],
+    _personal_id: Annotated[UUID, Depends(get_personal_id_actual)],
 ) -> PersonalResponse:
     try:
         resultado = await use_case.ejecutar(personal_id)
