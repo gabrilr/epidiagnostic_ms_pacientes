@@ -1,43 +1,12 @@
-# Microservicio 1 — Gestión de Pacientes y Personal Médico
+# Microservicio 1 — Gestión de Pacientes
 
-Parte de **EpiDiagnostic-Maya**. Responsable del registro de pacientes,
-su historial médico, y registro de personal médico/enfermería.
-Arquitectura hexagonal · Patrón Database per service.
+Parte de **EpiDiagnostic-Maya**. Responsable del registro de pacientes
+y su historial médico. Arquitectura hexagonal · Patrón Database per
+service.
 
-## Estado de la implementación
-
-Esto es un **esqueleto funcional**: la estructura hexagonal está
-completa, y el flujo de **Pacientes** está implementado end-to-end
-(dominio → aplicación → infraestructura → API). El módulo de
-**Personal Médico** está documentado con TODOs detallados que siguen
-exactamente el mismo patrón ya implementado, listos para completarse.
-
-### Implementado y probado
-
-- Entidades de dominio: `Paciente`, `HistorialMedico`, `AntecedenteMedico`, `PersonalMedico`
-- Value Objects: `CURP` (con validación de formato), `Ubicacion`
-- Puertos (interfaces): `PacienteRepository`, `PersonalRepository`
-- Casos de uso: `CrearPacienteUseCase` (idempotente por CURP),
-  `ConsultarPacienteUseCase`, `SincronizarPacientesBatchUseCase`
-- Adaptador de persistencia: `PacienteRepositoryImpl` (SQLAlchemy async + MySQL)
-- API REST: `POST /pacientes`, `GET /pacientes/{id}`, `POST /pacientes/sync`
-- Inyección de dependencias completa
-- Migraciones con Alembic (async)
-- Tests unitarios de dominio (8 tests, sin necesidad de base de datos)
-
-### Pendiente (TODOs documentados en el código)
-
-- `PersonalModel` (modelo SQLAlchemy)
-- `PersonalRepositoryImpl`
-- `RegistrarPersonalUseCase`, `ConsultarPersonalUseCase`
-- `personal_router.py`, `personal_schemas.py`
-- `GET /pacientes/catalogo` (descarga incremental offline)
-- `POST /pacientes/{id}/historial` (anexar antecedente)
-- `PATCH /pacientes/{id}/datos` (corrección explícita de datos)
-
-Cada uno de estos TODOs incluye, dentro del propio archivo, la firma de
-métodos esperada y el patrón exacto a seguir (espejo de lo ya
-implementado para Pacientes).
+Personal médico, autenticación (JWT) y suscripciones (plan Premium) se
+extrajeron a su propio microservicio, **ms-personal (MS3)**, para que
+cada servicio tenga una sola responsabilidad clara.
 
 ## Cómo levantar el proyecto
 
@@ -69,12 +38,20 @@ pytest tests/unit/ -v
 
 ## Endpoints implementados
 
-| Método | Ruta | Descripción |
-|---|---|---|
-| POST | `/pacientes` | Alta individual. Idempotente por CURP. |
-| GET | `/pacientes/{id}` | Consulta puntual (usado por microservicio de Atención Médica). |
-| POST | `/pacientes/sync` | Alta en batch desde la app móvil offline-first. |
-| GET | `/health` | Health check para orquestadores / API Gateway. |
+| Método | Ruta | Descripción | Auth |
+|---|---|---|---|
+| POST | `/pacientes` | Alta individual. Idempotente por CURP. | 🔒 |
+| GET | `/pacientes/{id}` | Consulta puntual (usado por ms-atencion-medica). | 🔒 |
+| POST | `/pacientes/sync` | Alta en batch desde la app móvil offline-first. | 🔒 |
+| GET | `/pacientes/catalogo` | Descarga incremental del catálogo offline. | 🔒 |
+| POST | `/pacientes/{id}/historial` | Anexa un antecedente médico (append-only). | 🔒 |
+| PATCH | `/pacientes/{id}/datos` | Corrige datos básicos de un paciente existente. | 🔒 |
+| GET | `/health` | Health check para orquestadores / API Gateway. | — |
+
+🔒 = requiere `Authorization: Bearer <token>` — el token lo emite
+**ms-personal (MS3)**, este microservicio solo lo verifica de forma
+stateless con la misma llave compartida (`JWT_SECRET_KEY`/
+`JWT_ALGORITHM`, deben coincidir exactamente).
 
 ## Regla de negocio clave: idempotencia silenciosa
 
@@ -85,14 +62,16 @@ en distintas comunidades dando de alta al mismo paciente sin saberlo
 estando ambas offline.
 
 La corrección de datos de un paciente existente es un flujo **separado
-y explícito** (`PATCH /pacientes/{id}/datos`, pendiente de implementar),
-nunca inferido automáticamente de un alta duplicada.
+y explícito** (`PATCH /pacientes/{id}/datos`), nunca inferido
+automáticamente de un alta duplicada.
 
 ## Comunicación con otros microservicios
 
-Este microservicio es consumido (no consume) por el microservicio de
-**Atención Médica**, que llama a:
+Este microservicio es consumido (no consume) por **ms-atencion-medica
+(MS2)**, que llama a:
 
 - `GET /pacientes/{id}` — validar que el paciente existe antes de registrar una atención
-- `GET /personal/{id}` — validar que el personal médico existe y está activo
 - `GET /pacientes/catalogo?desde=...` — la app móvil lo usa directamente para mantener su catálogo offline actualizado
+
+La validación de `personal_id` (antes también resuelta aquí) ahora la
+resuelve **ms-personal (MS3)** vía `GET /personal/{id}`.
