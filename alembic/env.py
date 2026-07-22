@@ -16,13 +16,11 @@ from app.infrastructure.config.database import Base  # noqa: E402
 from app.infrastructure.config.settings import get_settings  # noqa: E402
 
 # Importar TODOS los modelos aquí para que Base.metadata los conozca y
-# Alembic pueda detectarlos en el autogenerate. Si se agrega un modelo
-# nuevo (ej. personal_model.py cuando se complete su TODO), debe
-# importarse también en esta línea.
+# Alembic pueda detectarlos en el autogenerate. PersonalModel y
+# SolicitudPremiumModel ya no viven aquí — se movieron a ms-personal
+# (MS3) junto con el resto de Auth/Personal/Admin.
 from app.infrastructure.adapters.output.persistence.models.paciente_model import PacienteModel  # noqa: E402,F401
 from app.infrastructure.adapters.output.persistence.models.antecedente_model import AntecedenteModel  # noqa: E402,F401
-from app.infrastructure.adapters.output.persistence.models.personal_model import PersonalModel  # noqa: E402,F401
-from app.infrastructure.adapters.output.persistence.models.solicitud_premium_model import SolicitudPremiumModel  # noqa: E402,F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

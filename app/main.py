@@ -6,10 +6,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.infrastructure.adapters.input.api.admin_router import router as admin_router
-from app.infrastructure.adapters.input.api.auth_router import router as auth_router
 from app.infrastructure.adapters.input.api.paciente_router import router as paciente_router
-from app.infrastructure.adapters.input.api.personal_router import router as personal_router
 from app.infrastructure.config.database import engine
 from app.infrastructure.config.settings import get_settings
 
@@ -27,10 +24,10 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.app_name,
     description=(
-        "Microservicio de gestión de pacientes y personal médico para "
-        "EpiDiagnostic-Maya. Responsable de registro de pacientes, su "
-        "historial médico, y registro de personal médico/enfermería. "
-        "Patrón: Database per service."
+        "Microservicio de gestión de pacientes para EpiDiagnostic-Maya. "
+        "Responsable de registro de pacientes y su historial médico. "
+        "Patrón: Database per service. Personal médico, autenticación "
+        "y suscripciones viven en ms-personal (MS3)."
     ),
     version="0.1.0",
     lifespan=lifespan,
@@ -43,10 +40,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth_router)
 app.include_router(paciente_router)
-app.include_router(personal_router)
-app.include_router(admin_router)
 
 
 @app.get("/health", tags=["Sistema"], summary="Health check para orquestadores/API Gateway")
